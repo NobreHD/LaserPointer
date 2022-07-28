@@ -51,6 +51,16 @@
         </ul>
         <hr>
         <ul>
+            <label for="size">Pointer Speed</label>
+            <input type="range" id="speed" min="1" value="10">
+        </ul>
+        <hr>
+        <ul>
+            <label for="size">Pointer Delay</label>
+            <input type="range" id="delay" value="0">
+        </ul>
+        <hr>
+        <ul>
             <label for="color">Pointer Color</label>
             <input type="color" id="color" value="#FF0000">
         </ul>
@@ -70,36 +80,52 @@
         const pointer = document.getElementById('pointer');
         const menu = document.getElementById("contextMenu");
         const size = document.getElementById("size");
+        const speed = document.getElementById("speed");
+        const delay = document.getElementById("delay");
         const color = document.getElementById("color");
         const animation = document.getElementById("animation");
         const bgColor = document.getElementById("bg-color");
 
-        let changePos = setInterval(()=>{
-            var x = Math.random() * (window.innerWidth - 50);
-            var y = Math.random() * (window.innerHeight - 50);
+        function move(){
+            var time = parseInt(1010-(speed.value*10));
+            var x = Math.random() * (window.innerWidth - size.value);
+            var y = Math.random() * (window.innerHeight - size.value);
             if (animation.checked){
                 let start = Date.now();
                 let actualX = pointer.offsetLeft;
                 let actualY = pointer.offsetTop;
 
-                var timer = setInterval(() => {
+                let timer = setInterval(() => {
                     let timePassed = Date.now() - start;
-                    if (timePassed > 1000){
+                    if (timePassed > time){
                         clearInterval(timer);
                         return;
                     }
-                    debugger;
-                    pointer.style.left = (actualX+(x-actualX)*(timePassed/1000)) + "px";
-                    pointer.style.top = (actualY+(y-actualY)*(timePassed/1000)) + "px";
+                    pointer.style.left = (actualX+(x-actualX)*(timePassed/time)) + "px";
+                    pointer.style.top = (actualY+(y-actualY)*(timePassed/time)) + "px";
                 }, 10);
             }else{
                 pointer.style.left = x + 'px';
                 pointer.style.top = y + 'px';
             }
-        }, 1000);
+            setTimeout(move, time+parseInt(delay.value*5));
+        }
+
+        setTimeout(move, 1000);
+
+        function isDescendant(parent, child) {
+            var node = child.parentNode;
+            while (node != null) {
+                if (node == parent) {
+                    return true;
+                }
+                node = node.parentNode;
+            }
+            return false;
+        }
 
         function hideMenu(e) {
-            if (e.target.id != 'contextMenu') {
+            if (e.target.id != 'contextMenu' && !isDescendant(menu, e.target)){
                 menu.style.display = "none" 
             }
         } 
