@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laser Pointer</title>
+    <style>
+        #pointer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            border-radius: 100%;
+        }
+
+        #contextMenu{
+            position: absolute;
+            display: none;
+            top: 0;
+            left: 0;
+            width: -moz-fit-content;
+            width: fit-content;
+            height: -moz-fit-content;
+            height: fit-content;
+            background-color: grey;
+            border-radius: 5%;
+            z-index: 100;
+            padding: 10px;
+        }
+
+        ul{
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        label{
+            display: block;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="contextMenu">
+        <ul>
+            <label for="size">Pointer Size</label>
+            <input type="range" id="size" min="1" value="50">
+        </ul>
+        <hr>
+        <ul>
+            <label for="color">Pointer Color</label>
+            <input type="color" id="color" value="#FF0000">
+        </ul>
+        <hr>
+        <ul>
+            <label for="animation">Pointer Animation</label>
+            <input type="checkbox" id="animation">
+        </ul>
+        <hr>
+        <ul>
+            <label for="bg-color">Background Color</label>
+            <input type="color" id="bg-color" value="#FFFFFF">
+        </ul>
+    </div>
+    <div id="pointer"></div>
+    <script>
+        const pointer = document.getElementById('pointer');
+        const menu = document.getElementById("contextMenu");
+        const size = document.getElementById("size");
+        const color = document.getElementById("color");
+        const animation = document.getElementById("animation");
+        const bgColor = document.getElementById("bg-color");
+
+        let changePos = setInterval(()=>{
+            var x = Math.random() * (window.innerWidth - 50);
+            var y = Math.random() * (window.innerHeight - 50);
+            if (animation.checked){
+                let start = Date.now();
+                let actualX = pointer.offsetLeft;
+                let actualY = pointer.offsetTop;
+
+                var timer = setInterval(() => {
+                    let timePassed = Date.now() - start;
+                    if (timePassed > 1000){
+                        clearInterval(timer);
+                        return;
+                    }
+                    debugger;
+                    pointer.style.left = (actualX+(x-actualX)*(timePassed/1000)) + "px";
+                    pointer.style.top = (actualY+(y-actualY)*(timePassed/1000)) + "px";
+                }, 10);
+            }else{
+                pointer.style.left = x + 'px';
+                pointer.style.top = y + 'px';
+            }
+        }, 1000);
+
+        function hideMenu(e) {
+            if (e.target.id != 'contextMenu') {
+                menu.style.display = "none" 
+            }
+        } 
+
+        function rightClick(e) { 
+            e.preventDefault();
+            if (menu.style.display == "block"){ 
+                hideMenu(e); 
+            }else{
+                menu.style.left = e.pageX + "px";
+                menu.style.top = e.pageY + "px";
+                menu.style.display = 'block';
+            } 
+        }
+
+        function changeSize(e) {
+            pointer.style.width = e.target.value + 'px';
+            pointer.style.height = e.target.value + 'px';
+        }
+
+        function changeColor(e) {
+            pointer.style.backgroundColor = e.target.value;
+        }
+
+        function changeBGColor(e) {
+            document.body.style.backgroundColor = e.target.value;
+        }
+
+        size.addEventListener('change', changeSize);
+        color.addEventListener('change', changeColor);
+        bgColor.addEventListener('change', changeBGColor);
+        document.onclick = hideMenu; 
+        document.oncontextmenu = rightClick; 
+    </script>
+</body>
+</html>
