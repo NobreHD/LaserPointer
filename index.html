@@ -11,7 +11,7 @@
     <meta property="og:url" content="https://nobrehd.github.io/LaserPointer/">
     <meta property="og:image" content="https://nobrehd.github.io/LaserPointer/pointer.png">
     <style>
-        #pointer {
+        .pointer {
             position: absolute;
             top: 0;
             left: 0;
@@ -80,9 +80,8 @@
             <input type="color" id="bg-color" value="#FFFFFF">
         </ul>
     </div>
-    <div id="pointer"></div>
+    <div class="pointer"></div>
     <script>
-        const pointer = document.getElementById('pointer');
         const menu = document.getElementById("contextMenu");
         const size = document.getElementById("size");
         const speed = document.getElementById("speed");
@@ -91,28 +90,37 @@
         const animation = document.getElementById("animation");
         const bgColor = document.getElementById("bg-color");
 
+        function everyPointer(func){
+            var pointers = document.getElementsByClassName("pointer");
+            for (var i = 0; i < pointers.length; i++) {
+                func(pointers[i]);
+            }
+        }
+
         function move(){
             var time = parseInt(1010-(speed.value*10));
-            var x = Math.random() * (window.innerWidth - size.value);
-            var y = Math.random() * (window.innerHeight - size.value);
-            if (animation.checked){
-                let start = Date.now();
-                let actualX = pointer.offsetLeft;
-                let actualY = pointer.offsetTop;
+            everyPointer((pointer) => {
+                var x = Math.random() * (window.innerWidth - size.value);
+                var y = Math.random() * (window.innerHeight - size.value);
+                if (animation.checked){
+                    let start = Date.now();
+                    let actualX = pointer.offsetLeft;
+                    let actualY = pointer.offsetTop;
 
-                let timer = setInterval(() => {
-                    let timePassed = Date.now() - start;
-                    if (timePassed > time){
-                        clearInterval(timer);
-                        return;
-                    }
-                    pointer.style.left = (actualX+(x-actualX)*(timePassed/time)) + "px";
-                    pointer.style.top = (actualY+(y-actualY)*(timePassed/time)) + "px";
-                }, 10);
-            }else{
-                pointer.style.left = x + 'px';
-                pointer.style.top = y + 'px';
-            }
+                    let timer = setInterval(() => {
+                        let timePassed = Date.now() - start;
+                        if (timePassed > time){
+                            clearInterval(timer);
+                            return;
+                        }
+                        pointer.style.left = (actualX+(x-actualX)*(timePassed/time)) + "px";
+                        pointer.style.top = (actualY+(y-actualY)*(timePassed/time)) + "px";
+                    }, 10);
+                }else{
+                    pointer.style.left = x + 'px';
+                    pointer.style.top = y + 'px';
+                }
+            });
             setTimeout(move, time+parseInt(delay.value*5));
         }
 
@@ -147,12 +155,16 @@
         }
 
         function changeSize(e) {
-            pointer.style.width = e.target.value + 'px';
-            pointer.style.height = e.target.value + 'px';
+            everyPointer((pointer) => {
+                pointer.style.width = e.target.value + 'px';
+                pointer.style.height = e.target.value + 'px';
+            });
         }
 
         function changeColor(e) {
-            pointer.style.backgroundColor = e.target.value;
+            everyPointer((pointer) => {
+                pointer.style.backgroundColor = e.target.value;
+            });
         }
 
         function changeBGColor(e) {
